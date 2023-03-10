@@ -1,3 +1,9 @@
+# Modifications
+
+All changes here are completely taken from the wonderful work done here: [riscv-arch-test-2.x](https://github.com/bobbl/riscv-arch-test-2.x)
+
+I didn't fork from there since it's using an old version of the tests, but all the changes were taken exactly from there. 
+
 # RISC-V Test Suites
 
 The tests are grouped based on the different extension subsets of the RISC-V unprivileged ISA.
