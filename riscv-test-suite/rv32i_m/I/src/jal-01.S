@@ -34,7 +34,13 @@ RVTEST_SIGBASE( x2,signature_x2_1)
 inst_0:
 // rd==x21, imm_val < 0, 
 // opcode: jal; dest:x21; immval:0x55556; align:0
-TEST_JAL_OP(x13, x21, 0x55556, 1b, x2, 0,0)
+// TEST_JAL_OP(x13, x21, 0x55556, 1b, x2, 0,0)
+// smaller offset to fit in 64K:
+TEST_JAL_OP(x13, x21, 0x56, 1b, x2, 0,0) 
+
+	
+
+TEST_JAL_OP(x13, x21, 0x56, 1b, x2, 0,0) 
 
 inst_1:
 // rd==x3, imm_val > 0, 
@@ -44,12 +50,17 @@ TEST_JAL_OP(x13, x3, 0x6, 3f, x2, 4,0)
 inst_2:
 // rd==x29, imm_val == (-(2**(18))), 
 // opcode: jal; dest:x29; immval:0x40000; align:0
-TEST_JAL_OP(x13, x29, 0x40000, 1b, x2, 8,0)
+//TEST_JAL_OP(x13, x29, 0x40000, 1b, x2, 8,0)
+// smaller offset to fit in 64K:
+TEST_JAL_OP(x13, x29, 0x40, 1b, x2, 8,0) 
 
 inst_3:
 // rd==x27, imm_val == ((2**(18))), 
 // opcode: jal; dest:x27; immval:0x40000; align:0
-TEST_JAL_OP(x13, x27, 0x40000, 3f, x2, 12,0)
+//TEST_JAL_OP(x13, x27, 0x40000, 3f, x2, 12,0)
+// smaller offset to fit in 64K:
+TEST_JAL_OP(x13, x27, 0x40, 3f, x2, 12,0)
+
 
 inst_4:
 // rd==x0, 

@@ -647,7 +647,6 @@ RVMODEL_DATA_END        /* model specific stuff */
 .macro  RVTEST_GOTO_MMODE
 #ifdef  rvtest_mtrap_routine            /**** FIXME this can be empty if no Umode ****/
 .option push
-.option norvc
 
 #ifdef rvtest_strap_routine             /* assume save are is in order M/S/V  */
     LA(  t1, Mtrapreg_sv)               /* addr of next higher priv mode save area   */
@@ -1618,3 +1617,47 @@ rvtest_data_begin:
   #endif
 #endif
 .endm
+
+/************************************************************************************/
+/**************** Branch macors to reduce memory    *********************************/
+/************************************************************************************/
+
+#define TEST_BRANCH_BWD_RETURNBLOCK(imm)         \
+    j . + (2*imm)                               ;\
+    .rept (imm-2)/2                             ;\
+        j . + (2*imm) + 12                      ;\
+    .endr
+
+#define TEST_BRANCH_BWD_OP(inst, tempreg, reg1, reg2, val1, val2, imm, swreg, offset, sigtag) \
+    LI(reg1, MASK_XLEN(val1))                   ;\
+    LI(reg2, MASK_XLEN(val2))                   ;\
+    addi tempreg,x0,0                           ;\
+                                                ;\
+    inst reg1, reg2, . - (2*imm)                ;\
+    addi tempreg, tempreg,0x2                   ;\
+    j 1f                                        ;\
+    /* taken branch returns here from block 1 */ ;\
+    addi tempreg,tempreg, 0x1                   ;\
+                                                ;\
+1:  RVTEST_SIGBASE(swreg,sigtag)                ;\
+    RVTEST_SIGUPD(swreg,tempreg,offset)
+
+#define TEST_BRANCH_FWD_OP(inst, tempreg, reg1, reg2, val1, val2, imm, swreg, offset, sigtag) \
+    LI(reg1, MASK_XLEN(val1))                   ;\
+    LI(reg2, MASK_XLEN(val2))                   ;\
+    addi tempreg,x0,0                           ;\
+                                                ;\
+    inst reg1, reg2, . + (2*imm)                ;\
+    addi tempreg, tempreg,0x2                   ;\
+    j 1f                                        ;\
+    /* taken branch returns here from block 4 */ ;\
+    addi tempreg, tempreg,0x3                   ;\
+                                                ;\
+1:  RVTEST_SIGBASE(swreg,sigtag)                ;\
+    RVTEST_SIGUPD(swreg,tempreg,offset)
+
+#define TEST_BRANCH_FWD_RETURNBLOCK(imm)         \
+    j . + (2*imm)                               ;\
+    .rept (imm-2)/2                             ;\
+        j . - (2*imm) + 12                      ;\
+    .endr
